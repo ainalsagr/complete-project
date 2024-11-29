@@ -1,21 +1,37 @@
-name: Complete Project Pipeline
+---
 
+name: Complete DevOps Project Pipeline
 
 on:
   push:
     branches:
       - main
-jobs:
+
+jobs: 
   build_and_push:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v2
       - name: Set Short SHA
-        run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-      - name: Build Docker image
-        run: docker build -t ainalsagr/complete-project:${{ env.SHORT_SHA }} .
-      - name: Login to Docker Hub
-        run: echo ${{ secrets.DOCKER_TOKEN }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
-      - name: Push Docker image
-        run: docker push ainalsagr/complete-project:${{ env.SHORT_SHA }}
+        run: |
+          echo "SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
+      - name: Build Docker Image
+        run: |
+          docker build -t ainalsagr/complete-project:${{ env.SHORT_SHA }} .
+      - name: Login to Dockerhub
+        run: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+      - name: Push to Dockerhub
+        run: |
+          docker push ainalsagr/complete-project:${{ env.SHORT_SHA }}
+      - name: Configure Git
+        run: |
+          git config --local user.email "ain.alsagr@gmail.com"
+          git config --local user.name "ainalsagr"
+      - name: Update Helm Chart with New Image Tag
+        run: |
+          sed -i 's/tag: .*/tag: ${{ env.SHORT_SHA }}/' projects/python/complete-devops-project-time-printer/values.yaml
+          git add projects/python/complete-devops-project-time-printer/values.yaml
+          git commit -m "Update image tag to ${{ env.SHORT_SHA }}"
+          git push
