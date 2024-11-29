@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: "https://github.com/ainalsagr/complete-project"
     targetRevision: HEAD
-    path: projects/python/complete-devops-project-time-printer
+    path: projects/complete-devops-project-time-printer
   destination:
     server: "https://kubernetes.default.svc"
     namespace: default
