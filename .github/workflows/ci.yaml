@@ -32,6 +32,6 @@ jobs:
       - name: Update Helm Chart with New Image Tag
         run: |
           sed -i 's/tag: .*/tag: ${{ env.SHORT_SHA }}/' complete-devops-project-time-printer/values.yaml
-          git add projects/python/complete-devops-project-time-printer/values.yaml
+          git add complete-devops-project-time-printer/values.yaml
           git commit -m "Update image tag to ${{ env.SHORT_SHA }}"
           git push
