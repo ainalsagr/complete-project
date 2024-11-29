@@ -1,19 +1,9 @@
-FROM node:19-alpine as build 
+FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY package*.json .
+COPY app.py .
 
-RUN npm install
-
-COPY . .
-
-################
-
-FROM nginx:1.21.0-alpine 
-COPY nginx.conf  /etc/nginx/conf.d/default.conf
-COPY --from=build /app/build /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+RUN pip install flask
+EXPOSE 8080
+CMD ["python", "app.py"]
